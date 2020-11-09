@@ -4,14 +4,6 @@
 
 This is an attempt to specify what data is available and what data is needed in order to 'stretch' PAPERMAP so that it matches the surveyed map information that we have.
 
-Maybe
-Step 0.1:
-Select one castiron polygon at a time, with the corresponding papermap polygons, village points, and (ultimately) other features that are part of the consideration.  
-NOTE - this will tear the papermap at castiron boundaries.
-Step 0.2:
-(Probably)
-Determine the center of gravity or one extreme (say northernmost) point for the castiron polygon on the one hand and the group of papermap polygons corresponding to that castiron polygon on the other. 
-Line them up.
 
 Step 1:
 Stretch PAPERMAP so that PAPERMAP mura boundaries match CASTIRON mura boundaries, wherever possible, and fail/cope gracefully where impossible/hard
@@ -26,7 +18,7 @@ VILLAGEMAP village location info so that all villages are inside the correct PAP
 (2.2) Match other 'heuristic' things that we think make it more likely that the village boundaries are in the correct locations, or at least 'reasonable' locations.
 These include: 
 Boundaries being somewhat equidistant to villages and village districts being somewhat 'compact'.
-Boundaries tending to follow LANDSCAPEMAP features, e.g. rivers, ridgelines, etc.
+Boundaries tending to follow LANDSCAPE features, e.g. rivers, ridgelines, etc.
 That the papermap not be distorted too much.
 
 
@@ -52,7 +44,7 @@ VILLAGEPOINTS   - village locations
 CASTIRON        - boundaries  Based on your nnet output. These are boundaries of the ~modern villages that comprise ca. 5-10 Edo-period villages whose boundaries we are after.  Regions are called 'mura'.
 PAPERMAP        - boundaries  Edo-period villages whose boundaries we are after  -  a tracing of a “paper map” with Edo-period village boundaries that had to be rubbersheeted in georeferencing. 
 AZAMAP          - boundaries  These are what my google doc calls aza: modern census districts. Werner has algorithmically eliminated those that we judged to be unlikely to preserve older boundaries.
-LANDSCAPEMAP    - rivers, ridgelines, etc
+LANDSCAPE       - rivers, ridgelines, etc
 
 TAG  - a type of information attached to some GIS objects, e.g. that all villages have a unique id, or that all castiron areas have the id of region they denote.
 NODE - a point on the map with lat&lon (or easting-northing), and maybe other information e.g. TAGs.
@@ -98,7 +90,12 @@ NODEs and AREAs
 AREAs have TAG - village_id that *link-to* the same names in VILLAGEMAP
 AREAs have TAG - castiron_id    that *link-to* the same names in CASTIRON.  The castiron_id says what castiron region the AREA is inside.
 
+NOTE some papermap areas have NO village_id.  These are shared areas that somehow belong to several villages.  
+     FD estimates that there are only approx 100-200 of these in the whole of Japan.  They still have castiron_id (of course).
+
 NOTE village_regions are NOT always contiguous - i.e. we can get enclaves and exclaves.
+
+NOTE we may have (very) rare cases of papermap areas that span 2 castiron regions.
 
 also: RELATIONs - for when we have regions that have foreign enclaves inside them.
 a RELATION lists the ids of several areas, with tags 'outer' and 'inner'
@@ -106,7 +103,7 @@ a RELATION lists the ids of several areas, with tags 'outer' and 'inner'
 
 SOMETIMES, BUT NOT ALWAYS:
 other information - e.g. 
-rivers are sometimes present
+rivers are sometimes present.  These may/will be in separate shapefiles - e.g. papermaplandscapeline.shp, etc.
 
 NOTE - unlike everything else other than PAPERMAP, the NODEs in papermap WERE NOT SURVEYED
        Thus the locations are not reliable.
@@ -123,27 +120,28 @@ SURVEYED
 consists of:
 NODEs and AREAs
 
-GE - not finished yet
-
 NOTE BY FD:  Maybe useful as a note to George: these are the smallest modern units in the administrative hierarchy, and sometimes correspond to Edo-period villages. 
 The version we will give you has been preselected to exclude those Aza that are less likely to preserve older boundaries. 
 That selection was made based on the observation that areas that urbanized in the modern period often have aza that bear no relation to the old villages, 
 while outlying areas often preserve their boundaries.
 
 
-** RIVERMAP / LANDSCAPEMAP
+** LANDSCAPE
+
 SURVEYED
 
 consists of:
 NODEs & LINEs.
+Maybe also AREAs
 
-GE - not finished yet
 
-Add extra TAGs here for you scoring methods.
+Add extra TAGs here for FD's scoring methods.
 
-NOTE - since all LANDSCAPEMAP features are in 1 shapefile, then the LINEs each need a TAG 
+NOTE - since all LANDSCAPE features are in 1 shapefile (or maybe 3, if we have points, lines, and areas), then the LINEs each need a TAG 
 - e.g. river, ridgeline, etc.
 
+
+** Talk
 
 NOTE BY FD:  If we give you water surfaces from a detailed land use survey, we would also be giving you areas. 
 We know that such rivers are more likely to be consequential than our drainage polylines, which make no distinction between a rivulet and a large river. 
@@ -151,34 +149,28 @@ But if areas complicate the task, I am happy to just give you the drainage polyl
 The proof of concept could just use PAPERMAP, CASTIRON, and VILLAGEPOINTS. 
 All the information exists, we just have to make a selection of what features to include and decide on the scoring method.
 I think we discussed this, but I am also open to letting you assign the scores that yield the best results, by trial and error. 
-Please remind me what your thinking is on that point.  #TODO
-**LANDSCAPEPOINTS
-SURVEYED
-These are features like mountain peaks and river nodes (confluences) that we can match with the corresponding features on papermaps.
 
-**PAPERMAPPOINTS
-NOT SURVEYED
-These are features like mountain peaks and river nodes and village centers available on some papermaps that we can require to be matched with LANDSCAPEPOINTS and VILLAGEPOINTS.
 
-**PAPERMAPLINES
-NOT SURVEYED
-These are features like rivers and ridges on some of our papermaps. 
-We may have to drop this feature, since the extra tracing work may bust of time budget and may greatly complicate your programming.
+* HOW THE DATA WILL BE SENT TO GE
 
-#TODO
-Questions for George:
-    (2) Did you want all the layers in one file, or just the natural features? 
-I would advocate for keeping the following separate:
-VILLAGEPOINTS
-PAPERMAP
-CASTIRON
-AZAMAP
-LANDSCAPELINES
-LANDSCAPEPOINTS
-PAPERMAPPOINTS
-My reasoning is the following:
-    (a) We may have to make corrections to these features as we go along, and it is inconvenient to have to re-combine all features whenever that happens.
-    (b) More importantly: the coverage of these layers is not identical. 
-VILLAGEPOINTS is either national (if we finish our review of locations in time) or prefectural (if we do not).
-PAPERMAP and PAPERMAPPOINTS and PAPERMAPLINES are often prefectural, but sometimes separate for each district level or some other sub-prefectural entity.
-CASTIRON, AZAMAP, LANDSCAPELINES, and LANDSCAPEPOINTS are national, but can be exported by prefecture if that is more convenient.
+As shapefiles:
+
+GE would prefer as few shapefiles as is reasonably possible.  Note that FD says more is easier for Yale.
+But would probably prefer to do Japan region-by-region rather than the whole country in 1 shapefile.
+That way, he can say - "there are 3 errors in osaka region, can you correct them" etc.
+Also, whole of Japan may be too large for GE's systems.
+
+As a suggestion ...
+For each region:
+Surveyed data:
+    villagepoints.shp    [points]   - vital
+    castiron.shp         [areas]    - vital
+    azamap.shp           [areas]
+    landscapepoints.shp  [points] 
+    landscapelines.shp   [lines]
+    landscapeareas.shp   [areas]
+Papermap data (i.e. data that will be 'moved about'):
+    papermap.shp         [areas]    - vital
+    papermaplandscapepoints.shp   [points] - these are e.g. mountain peaks    
+    papermaplandscapelines.shp    [lines]  - these are e.g. rivers, ridgelines
+    papermaplandscapeareas.shp    [areas]  - these are e.g. lakes, forests
