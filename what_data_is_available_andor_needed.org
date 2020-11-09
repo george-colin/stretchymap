@@ -174,3 +174,4 @@ Papermap data (i.e. data that will be 'moved about'):
     papermaplandscapepoints.shp   [points] - these are e.g. mountain peaks    
     papermaplandscapelines.shp    [lines]  - these are e.g. rivers, ridgelines
     papermaplandscapeareas.shp    [areas]  - these are e.g. lakes, forests
+
