@@ -13,7 +13,7 @@ Step 2:
 Stretch papermap, (mostly) within each CASTIRON region separately, so as to:  
 
 (2.1) Adjust PAPERMAP village boundaries to match to:
-VILLAGEMAP village location info so that all villages are inside the correct PAPERMAP village_boundaries.
+VILLAGEPOINTS village location info so that all villages are inside the correct PAPERMAP village_boundaries.
 
 (2.2) Match other 'heuristic' things that we think make it more likely that the village boundaries are in the correct locations, or at least 'reasonable' locations.
 These include: 
@@ -63,7 +63,12 @@ The NODEs have TAG - castiron_id    - unique names that *link-to* the same names
 
 NOTE 2 villages can have the same village_id  - e.g. upper and lower parts of a village
 
-NOTE - village_id 9999 seems to denote something special - FD says to discard villages with this village_id
+NOTE - village_id 9999 is not a real village_id - it denotes something special (in particular, that a real village_id could not be determined) - George’s code should then ignore it such villages.
+FD SAYS: """There will be cases in which we cannot match a village point to a papermap polygon, for example because, 
+for all that we have been able to locate the village point, we are not certain about its relationship with any of the papermap polygons. 
+Other situations include village points whose location is not precise. 
+This happens when we know from textual sources that the village point should be inside a particular castiron polygon but have no more precise details."""
+
 
 
 ** CASTIRON
@@ -87,7 +92,7 @@ NOT-SURVEYED
 consists of:
 NODEs and AREAs
 
-AREAs have TAG - village_id that *link-to* the same names in VILLAGEMAP
+AREAs have TAG - village_id that *link-to* the same names in VILLAGEPOINTS
 AREAs have TAG - castiron_id    that *link-to* the same names in CASTIRON.  The castiron_id says what castiron region the AREA is inside.
 
 NOTE some papermap areas have NO village_id.  These are shared areas that somehow belong to several villages.  
